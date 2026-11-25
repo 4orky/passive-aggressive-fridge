@@ -39,7 +39,7 @@ DRAFTS = [
 def draft_passes_gate(draft):
     wording = draft["text"]
     lowered = wording.lower()
-    return GATE_MINIMUM <= len(wording) <= GATE_MAXIMUM and wording.strip() != "" and "\n" not in wording and not any(phrase in lowered for phrase in TIRED_PHRASES)
+    return GATE_MINIMUM <= len(wording) <= GATE_MAXIMUM and wording.strip() != "" and "\n" not in wording and "\r" not in wording and "\t" not in wording and not any(phrase in lowered for phrase in TIRED_PHRASES)
 def choose_draft(drafts):
     for draft in drafts:
         if sum(draft["marks"].values()) != draft["total"]:
@@ -55,7 +55,7 @@ def file_draft(text):
     if roundtrip != text:
         print("failure: bytes read back from /output/entry.txt differ from the chosen draft", file=sys.stderr)
         raise SystemExit(1)
-    if "\n" in text or not GATE_MINIMUM <= len(text) <= GATE_MAXIMUM:
+    if not draft_passes_gate({"text": text}):
         print("failure: chosen draft breaks the one-line 1-200 character gate", file=sys.stderr)
         raise SystemExit(1)
 def emit_entry():
